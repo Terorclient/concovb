@@ -2,95 +2,123 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>#OYUNUMADOKUNMA</title>
+<title>Ankara Etimesgut Hava Durumu</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(#4facfe, #00f2fe);
+  color: white;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  text-align: center;
+}
+
+.temp {
+  font-size: 64px;
+  margin: 10px 0;
+}
+
+/* ☀️ GÜNEŞ */
+.sun {
+  width: 100px;
+  height: 100px;
+  background: yellow;
+  border-radius: 50%;
+  margin: 20px auto;
+  animation: spin 6s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 🌧️ YAĞMUR */
+.rain {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 20px auto;
+}
+
+.drop {
+  position: absolute;
+  width: 4px;
+  height: 15px;
+  background: white;
+  animation: fall 1s infinite;
+}
+
+@keyframes fall {
+  from { top: 0; opacity: 1; }
+  to { top: 80px; opacity: 0; }
+}
+
+/* ☁️ BULUT */
+.cloud {
+  width: 120px;
+  height: 60px;
+  background: #eee;
+  border-radius: 50px;
+  margin: 20px auto;
+  animation: move 3s ease-in-out infinite alternate;
+}
+
+@keyframes move {
+  from { transform: translateX(-20px); }
+  to { transform: translateX(20px); }
+}
+</style>
 </head>
+
 <body>
-
-<h1>#OYUNUMADOKUNMA</h1>
-<p>Dijital oyun platformlarına müdahaleye hayır</p>
-
-<h2>Toplam Destek: <span id="count">0</span></h2>
-
-<div id="platforms">
-  <div class="card">STEAM</div>
-  <div class="card">EPIC GAMES</div>
-  <div class="card">PLAYSTATION STORE</div>
-  <div class="card">XBOX STORE</div>
+<div class="container">
+  <h1>Ankara / Etimesgut</h1>
+  <div id="animation"></div>
+  <div class="temp" id="temp">--°C</div>
+  <p id="desc">Yükleniyor...</p>
 </div>
-
-<button id="supportBtn">DESTEK VER</button>
-
-<div id="shareBox" style="display:none;">
-  <a id="tw" target="_blank">Twitter</a>
-  <a id="wa" target="_blank">WhatsApp</a>
-</div>
-
-<footer>© 2026 Oyuna Dokunma Tüm hakları saklıdır Geliştirici Raax Setup.</footer>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-  // Firebase ayarları
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT.firebaseio.com",
-    projectId: "YOUR_PROJECT",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+const apiKey = "API_KEY_BURAYA";
+const url = `https://api.openweathermap.org/data/2.5/weather?q=Etimesgut,tr&units=metric&lang=tr&appid=${apiKey}`;
 
-  const countEl = document.getElementById("count");
-  const btn = document.getElementById("supportBtn");
-  const share = document.getElementById("shareBox");
+fetch(url)
+  .then(res => res.json())
+  .then(data => {
+    const temp = Math.round(data.main.temp);
+    const weather = data.weather[0].main;
 
-  const destekKey = "destekVerdi";
-  let destekVerdi = localStorage.getItem(destekKey);
+    document.getElementById("temp").innerText = temp + "°C";
+    document.getElementById("desc").innerText = data.weather[0].description;
 
-  // Gerçek zamanlı oy sayısı
-  const countRef = db.ref('destekSayisi');
-  countRef.on('value', snapshot => {
-    let value = snapshot.val() || 0;
-    countEl.innerText = value;
-  });
+    const anim = document.getElementById("animation");
 
-  btn.onclick = () => {
-    if(destekVerdi) return;
-    countRef.transaction(current => (current || 0) + 1);
-    localStorage.setItem(destekKey, true);
-    destekVerdi = true;
-    share.style.display = "block";
-
-    const text = encodeURIComponent("#OYUNUMADOKUNMA – Dijital oyun platformlarına müdahaleye hayır!");
-    const url = encodeURIComponent(location.href);
-    document.getElementById("tw").href = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
-    document.getElementById("wa").href = `https://wa.me/?text=${text}%20${url}`;
-  };
-
-  if(destekVerdi) share.style.display = "block";
-
-  // Basit animasyon: platformları sırayla göstermek
-  const cards = document.querySelectorAll('#platforms .card');
-  cards.forEach((card, i) => {
-    card.style.opacity = 0;
-    card.style.transform = "translateY(20px)";
-    setTimeout(() => {
-      card.style.transition = "opacity 0.5s, transform 0.5s";
-      card.style.opacity = 1;
-      card.style.transform = "translateY(0)";
-    }, i * 300);
+    if (weather === "Clear") {
+      anim.innerHTML = '<div class="sun"></div>';
+    } 
+    else if (weather === "Rain") {
+      anim.innerHTML = `
+        <div class="rain">
+          <div class="drop" style="left:20px"></div>
+          <div class="drop" style="left:50px"></div>
+          <div class="drop" style="left:80px"></div>
+        </div>`;
+    } 
+    else {
+      anim.innerHTML = '<div class="cloud"></div>';
+    }
+  })
+  .catch(() => {
+    document.getElementById("desc").innerText = "Hava durumu alınamadı";
   });
 </script>
-
 </body>
 </html>
-
-
-
-
