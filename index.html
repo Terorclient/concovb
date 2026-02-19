@@ -3,22 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🌙 Ramazan Geri Sayım</title>
+<title>Ramazan Hoşgeldin</title>
 
 <style>
 body {
     margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     font-family: Arial, sans-serif;
-    background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+    background: radial-gradient(circle at top, #1c2b4a, #0d1b2a);
     color: white;
-    text-align: center;
     overflow: hidden;
 }
 
-h1 {
-    margin-top: 80px;
+/* Yıldız efekti */
+body::after {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: url("https://www.transparenttextures.com/patterns/stardust.png");
+    animation: stars 80s linear infinite;
+    opacity: 0.4;
+}
+
+@keyframes stars {
+    from { transform: translate(0,0); }
+    to { transform: translate(-500px,-500px); }
+}
+
+.title {
     font-size: 3rem;
+    cursor: pointer;
+    text-align: center;
+    transition: 0.4s;
     animation: glow 2s infinite alternate;
+    z-index: 2;
 }
 
 @keyframes glow {
@@ -26,64 +49,55 @@ h1 {
     to { text-shadow: 0 0 30px orange; }
 }
 
-#countdown {
-    font-size: 2rem;
+.share-btn {
     margin-top: 30px;
+    padding: 12px 25px;
+    background: gold;
+    border: none;
+    border-radius: 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+    z-index: 2;
 }
 
-.stars {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat;
-    animation: moveStars 60s linear infinite;
-    z-index: -1;
+.share-btn:hover {
+    transform: scale(1.1);
 }
 
-@keyframes moveStars {
-    from { background-position: 0 0; }
-    to { background-position: 10000px 5000px; }
+.socials {
+    margin-top: 20px;
+    display: none;
+    gap: 15px;
+    z-index: 2;
 }
 
-.social {
-    position: absolute;
-    bottom: 20px;
-    width: 100%;
-}
-
-.social h3 {
-    margin-bottom: 10px;
-}
-
-.social a {
-    margin: 10px;
-    padding: 10px 15px;
+.socials a {
     text-decoration: none;
     color: white;
-    border-radius: 8px;
+    padding: 10px 15px;
+    border-radius: 20px;
     transition: 0.3s;
 }
 
 .whatsapp { background: #25D366; }
 .twitter { background: #1DA1F2; }
 .instagram { background: #E1306C; }
-.tiktok { background: #000000; }
+.tiktok { background: #000; }
 
-.social a:hover {
-    opacity: 0.7;
+.socials a:hover {
+    transform: scale(1.1);
 }
 </style>
 </head>
 
 <body>
 
-<div class="stars"></div>
+<h1 class="title" onclick="changeText()">🌙 Ramazan Hoşgeldin</h1>
 
-<h1>🌙 Ramazan'a Geri Sayım</h1>
-<div id="countdown"></div>
+<button class="share-btn" onclick="toggleShare()">📤 Paylaş</button>
 
-<div class="social">
-    <h3>🙏 Oruç tutan kişiyle paylaş</h3>
+<div class="socials" id="socialLinks">
     <a class="whatsapp" target="_blank" href="https://wa.me/?text=Hayırlı%20Ramazanlar%20🌙">WhatsApp</a>
     <a class="twitter" target="_blank" href="https://twitter.com/intent/tweet?text=Hayırlı%20Ramazanlar%20🌙">Twitter</a>
     <a class="instagram" target="_blank" href="https://www.instagram.com/">Instagram</a>
@@ -91,30 +105,21 @@ h1 {
 </div>
 
 <script>
-// 2026 Ramazan başlangıç tarihi (değiştirilebilir)
-var ramazanTarihi = new Date("Feb 17, 2026 00:00:00").getTime();
+function changeText() {
+    var title = document.querySelector(".title");
+    title.innerHTML = "✨ Teşekkür Ederiz ✨";
+}
 
-var x = setInterval(function() {
-    var now = new Date().getTime();
-    var distance = ramazanTarihi - now;
-
-    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    document.getElementById("countdown").innerHTML =
-    days + " Gün " + hours + " Saat "
-    + minutes + " Dakika " + seconds + " Saniye ";
-
-    if (distance < 0) {
-        clearInterval(x);
-        document.getElementById("countdown").innerHTML = "🌙 Ramazan Başladı!";
+function toggleShare() {
+    var socials = document.getElementById("socialLinks");
+    if (socials.style.display === "flex") {
+        socials.style.display = "none";
+    } else {
+        socials.style.display = "flex";
     }
-}, 1000);
+}
 </script>
 
 </body>
 </html>
-
 
